@@ -1,0 +1,24 @@
+#Author:  Ron Mallory
+#Date:    2/14/2019
+#Purpose: Add User to AD Security Group From CSV
+
+import-module ActiveDirectory
+$results = @()
+$UserList = '<FilePath1>'
+$OutFile = '<FilePath2>'
+$Users = Get-Content $UserList
+$groupName = '<GroupNameHere>'
+
+Foreach($user in $Users){ 
+    $userExists = get-adUser -Filter {samAccountName -eq $user} | Select samAccountName
+    if($userExists) {
+        #Write-output $user + ' is in AD.'
+        Add-ADGroupMember $GroupName $user
+        $results += $user + ' was added to ' + $GroupName + ' Security Group.'
+    }
+    else{
+        $results +=  $user + ' This user has no AciveDirectory Account'
+        #Write-output $user + ' is not in AD.'
+    }
+}
+$results #| Out-File $OutFile
